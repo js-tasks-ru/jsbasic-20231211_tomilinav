@@ -1,10 +1,12 @@
 function factorial(n) {
-let reslut = 1;
-if(n===0||n===1){
-return reslut;
-}
-for (let i=1; i<=n; i++){
-  reslut = reslut * i;
-}
-return reslut;
+  let result = 1;
+  if (n === 0 || n === 1) {
+    return result;
+  }
+
+  for (let i = 1; i <= n; i++) {
+    result = result * i;
+  }
+
+  return result;
 }
