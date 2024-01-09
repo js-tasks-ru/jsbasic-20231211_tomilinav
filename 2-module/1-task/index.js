@@ -1,5 +1,6 @@
 function sumSalary(salaries) {
-  // ваш код...
+ master
+
   let sumOfSalaries = 0;
 
   for (let key in salaries) {
