@@ -1,5 +1,4 @@
 function sumSalary(salaries) {
- master
 
   let sumOfSalaries = 0;
 
