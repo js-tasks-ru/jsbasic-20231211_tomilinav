@@ -4,9 +4,9 @@ function highlight(table) {
     
     if (!tds[3].getAttribute("data-available")) {
       row.hidden = true;
-    } else {
+   } else {
       if (tds[3].dataset.available === "true") {
-        row.classList.add("available")
+       row.classList.add("available")
       } else {
         row.classList.add("unavailable")
       }
