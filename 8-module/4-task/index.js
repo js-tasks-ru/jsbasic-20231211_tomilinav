@@ -1,7 +1,7 @@
-import createElement from '../../assets/lib/create-element.js';
-import escapeHtml from '../../assets/lib/escape-html.js';
+import createElement from "../../assets/lib/create-element.js";
+import escapeHtml from "../../assets/lib/escape-html.js";
 
-import Modal from '../../7-module/2-task/index.js';
+import Modal from "../../7-module/2-task/index.js";
 
 export default class Cart {
   cartItems = []; // [product: {...}, count: N]
@@ -13,30 +13,28 @@ export default class Cart {
   }
 
   addProduct(product) {
-    let cartItem = this.cartItems.find(
-      item => item.product.id == product.id
-    );
-    if (!cartItem) {
-      cartItem = {
-        product,
-        count: 1
-      };
-      this.cartItems.push(cartItem);
-    } else {
-      cartItem.count++;
+    if (!product || product == null) {
+      return;
     }
 
-    this.onProductUpdate(cartItem);
+    for (let item of this.cartItems) {
+      if (item.product == product) {
+        item.count++;
+        this.onProductUpdate(item);
+        return;
+      }
+    }
+    this.cartItems.push({ product, count: 1 });
+    this.onProductUpdate(this.cartItems.at(-1));
   }
 
   updateProductCount(productId, amount) {
-    let cartItem = this.cartItems.find(item => item.product.id == productId);
+    let cartItem = this.cartItems.find((item) => item.product.id == productId);
     cartItem.count += amount;
 
-    if (cartItem.count == 0) {
+    if (cartItem.count === 0) {
       this.cartItems.splice(this.cartItems.indexOf(cartItem), 1);
     }
-
     this.onProductUpdate(cartItem);
   }
 
@@ -57,9 +55,7 @@ export default class Cart {
 
   renderProduct(product, count) {
     return createElement(`
-    <div class="cart-product" data-product-id="${
-      product.id
-    }">
+    <div class="cart-product" data-product-id="${product.id}">
       <div class="cart-product__img">
         <img src="/assets/images/products/${product.image}" alt="product">
       </div>
@@ -108,11 +104,8 @@ export default class Cart {
 
   renderModal() {
     this.modal = new Modal();
-
     this.modal.setTitle("Your order");
-
-    this.modalBody = document.createElement(`div`);
-
+    this.modalBody = document.createElement("div");
     for (let { product, count } of this.cartItems) {
       this.modalBody.append(this.renderProduct(product, count));
     }
@@ -121,12 +114,12 @@ export default class Cart {
 
     this.modalBody.addEventListener("click", this.onModalBodyClick);
 
-    this.modalBody.querySelector("form").onsubmit = (event) => this.onSubmit(event);
+    this.modalBody.querySelector("form").onsubmit = (event) =>
+      this.onSubmit(event);
 
     this.modal.setBody(this.modalBody);
 
-    // when modal is closed, we forget about it, don't update it any more
-    this.modal.elem.addEventListener('modal-close', () => {
+    this.modal.elem.addEventListener("modal-close", () => {
       this.modal = null;
       this.modalBody = null;
     });
@@ -145,28 +138,34 @@ export default class Cart {
     }
   };
 
-  onProductUpdate({product, count}) {
+  onProductUpdate({ product, count }) {
     this.cartIcon.update(this);
 
-    if (!this.modal || !document.body.classList.contains('is-modal-open')) {
+    if (!this.modal || !document.body.classList.contains("is-modal-open")) {
       return;
     }
 
     if (this.cartItems.length == 0) {
-      // No products, close the modal
       this.modal.close();
       return;
     }
 
     if (count == 0) {
-      this.modalBody.querySelector(`[data-product-id="${product.id}"]`).remove();
+      this.modalBody
+        .querySelector(`[data-product-id="${product.id}"]`)
+        .remove();
     } else {
-      this.modalBody.querySelector(`[data-product-id="${product.id}"] .cart-counter__count`).innerHTML = count;
+      this.modalBody.querySelector(
+        `[data-product-id="${product.id}"] .cart-counter__count`
+      ).innerHTML = count;
 
-      this.modalBody.querySelector(`[data-product-id="${product.id}"] .cart-product__price`).innerHTML = '€' + (count * product.price).toFixed(2);
+      this.modalBody.querySelector(
+        `[data-product-id="${product.id}"] .cart-product__price`
+      ).innerHTML = "€" + (count * product.price).toFixed(2);
     }
 
-    this.modalBody.querySelector(`.cart-buttons__info-price`).innerHTML = '€' + this.getTotalPrice().toFixed(2);
+    this.modalBody.querySelector(`.cart-buttons__info-price`).innerHTML =
+      "€" + this.getTotalPrice().toFixed(2);
   }
 
   async onSubmit(event) {
@@ -175,10 +174,10 @@ export default class Cart {
     this.modalBody
       .querySelector('button[type="submit"]')
       .classList.add("is-loading");
-    let form = this.modalBody.querySelector('.cart-form');
+    let form = this.modalBody.querySelector(".cart-form");
     let userData = new FormData(form);
 
-    await fetch('https://httpbin.org/post', { method: 'POST', body: userData });
+    await fetch("https://httpbin.org/post", { method: "POST", body: userData });
 
     this.modal.setTitle("Success!");
     this.modalBody
@@ -197,7 +196,7 @@ export default class Cart {
         </p>
       </div>
       `;
-  };
+  }
 
   addEventListeners() {
     this.cartIcon.elem.onclick = () => this.renderModal();
